@@ -37,30 +37,38 @@ class RandomPasswd():
 
     # Takes the given security level and generates a mixed list for the chars var
     def set_security(self, level):
-        if level >= 1:
-            self.chars = self.lower
-        if level >= 2:
-            self.chars = self.chars + self.upper
-        if level >= 3:
-            self.chars = self.chars + self.number
-        if level == 4:
-            self.chars = self.chars + self.symbol
+        level = int(round(level))
+        
+        if (level >= 1 and level <= 4):
+            if level >= 1:
+                self.chars = self.lower
+            if level >= 2:
+                self.chars = self.chars + self.upper
+            if level >= 3:
+                self.chars = self.chars + self.number
+            if level == 4:
+                self.chars = self.chars + self.symbol
+        else:
+            raise TypeError("Please enter a security level between 1 and 4.")
             
     # Function retrives the random string of numbers required to generate a password
     # from random.org
     def get_randnumbers(self, length):
-        data = list()
+        if type(length) is type(int()):
+            data = list()
 
-        # Use the random.org API to get our random numbers
-        self.quota = r.get_quota()
-        
-        if self.quota > 0:
-            # print "Bits quota left: " + str(self.quota)
-            data = r.randrange(1, len(self.chars), 1, ammount = length)
+            # Use the random.org API to get our random numbers
+            self.quota = r.get_quota()
+            
+            if self.quota > 0:
+                # print "Bits quota left: " + str(self.quota)
+                data = r.randrange(1, len(self.chars), 1, ammount = length)
+            else:
+                raise ValueError("Out of random.org bits :/")
+                     
+            return data
         else:
-            raise ValueError("Out of random.org bits :/")
-                
-        return data            
+             raise TypeError("The length must be an intger.")
 
     # Converts the list of numbers into a list of characters using the chars var
     def list_2_char(self, numbers):
@@ -81,17 +89,23 @@ class RandomPasswd():
         return password
 
     # The public method for generating a password, input is length of password and security level
-    def passwd(self, length, level):
-        if (level >= 1 and level <= 4):
-            self.set_security(int(round(level)))
-        else:
-            return "Please enter a security level between 1 and 4."
+    # default is a length of 4, security level 4 and ammount of 1.
+    def passwd(self, length = 12, level = 4, ammount = 1):
+        if type(ammount) is not type(int()) or ammount < 1:
+            raise TypeError("Ammount needs to be an intger.")
+
+        self.set_security(level)
+
+        password = list()
+        i = 0
         
-        # print "Security: " + str(level)
-        # print "Length:   " + str(length)
-        
-        rand     = self.get_randnumbers(length)
-        letters  = self.list_2_char(rand)
-        password = self.gen_password(letters)
+        while i < ammount:
+            rand     = self.get_randnumbers(length)
+            letters  = self.list_2_char(rand)
+            password.append(self.gen_password(letters))
+            i = i + 1
+
+        if i is 1:
+            password = str(password[0])
 
         return password
