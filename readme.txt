@@ -4,11 +4,6 @@
 This simple Python class uses the random.org api
 to generate really secure passwords.
 
-The class has 3 settings, one for using the standard
-random number generator or the random.org service,
-one for how secure (or simple) you want the password,
-and one for the length of the password.
-
 Example Use
 ===========
 
