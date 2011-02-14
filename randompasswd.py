@@ -21,6 +21,7 @@ __author__ = "Sam Parkinson <r3morse at gmail dot com>"
 __license__ = "MIT Licence"
 
 from randomdotorg import RandomDotOrg
+import random
 
 class RandomPasswd():
     """This class can be used to generate secure passwords.
@@ -32,27 +33,30 @@ class RandomPasswd():
     >>> print p.passwd()
     """
 
-    # A list of characters that will be used to generate a password.
-    lower   = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-                "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ]
+    # set to True to save using random.org bits.
+    dev = False
 
-    upper   = [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-                "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" ]
+    # a list of characters that will be used to generate a password.
+    lower       = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+                    "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ]
 
-    number  = [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+    upper       = [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+                    "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" ]
 
-    symbol  = [ "`", "!", "\"", "$", "%", "^", "&", "*", "(", ")", "'",
-                "-", "_", "=", "+", "[", "{", "]", "}", ";", ":", "?",
-                "@", "#", "~", "\\", "|", ",", "<", ".", ">", "/" ]
+    number      = [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
 
-    # Creating the chars variable that will, according to the security level
+    punctuation = [ "`", "!", "\"", "$", "%", "^", "&", "*", "(", ")", "'",
+                     "-", "_", "=", "+", "[", "{", "]", "}", ";", ":", "?",
+                     "@", "#", "~", "\\", "|", ",", "<", ".", ">", "/" ]
+
+    # creating the chars variable that will, according to the security level
     # contain a list of characters from the above lists.
     chars   = dict()
 
-    # Our quota at random.org.
+    # our quota at random.org.
     quota   = None
 
-    # Start the random.org api class.
+    # start the random.org api class.
     r = RandomDotOrg()
 
     def set_security(self, strength):
@@ -67,7 +71,7 @@ class RandomPasswd():
             if strength >= 3:
                 self.chars = self.chars + self.number
             if strength == 4:
-                self.chars = self.chars + self.symbol
+                self.chars = self.chars + self.punctuation
         else:
             raise ValueError("Please enter a strength between 1 and 4.")
     
@@ -76,13 +80,20 @@ class RandomPasswd():
         if type(length) is type(int()):
             data = list()
 
-            # Use the random.org API to get our random numbers
-            self.quota = self.r.get_quota()
-            
-            if self.quota > 0:
-                data = self.r.randrange(0, len(self.chars), ammount = length)
+            # use random module to save bits when testing
+            if self.dev:
+                i = 0
+                while i < length:
+                    data.append(random.randrange(0, len(self.chars)))
+                    i = i + 1
             else:
-                raise ValueError("Out of random.org bits...")
+                # use the random.org API to get our random numbers
+                self.quota = self.r.get_quota()
+                
+                if self.quota > 0:
+                    data = self.r.randrange(0, len(self.chars), ammount = length)
+                else:
+                    raise ValueError("Out of random.org bits...")
                      
             return data
         else:
@@ -91,6 +102,12 @@ class RandomPasswd():
     def list_2_char(self, numbers):
         """Converts the list of numbers into a list of characters using `chars`."""
         data = list()
+
+        # shuffle the list of characters we are using.
+        if self.dev:
+            random.shuffle(self.chars)
+        else:
+            self.r.shuffle(self.chars)
 
         for i in numbers:
             data.append(self.chars[i])
@@ -106,8 +123,8 @@ class RandomPasswd():
 
         return password
 
-    def passwd(self, length = 12, strength = 4, ammount = 1):
-        """Generates a strong password with a default length of 12.
+    def passwd(self, length = 14, strength = 4, ammount = 1):
+        """Generates a strong password with a default length of 14.
         
         `length`   the length of the password(s).
         
@@ -119,7 +136,14 @@ class RandomPasswd():
                    returns a list of strings.
         """
         if type(ammount) is not type(int()) or ammount < 1:
-            raise TypeError("`ammount` needs to be an intger.")
+            raise TypeError("`ammount` needs to be a positive intger.")
+
+        # avoid requesting too large an ammount of random intgers
+        if length * ammount > 10000:
+            if length > ammount:
+                raise ValueError("Please request a smaller password length.")
+            else:
+                raise ValueError("Please generate a smaller number of passwords.")
 
         self.set_security(strength)
 
@@ -128,16 +152,18 @@ class RandomPasswd():
         rand     = self.get_randnumbers(length * ammount)
         letters  = self.list_2_char(rand)
 
-        i = 0
-        start = 0
-        end   = 0
-        
+        # splice up the list of letters into seperate passwords
+        i       = 0
+        start   = 0
+        end     = 0
+
         while i < ammount:
             end = length * (i + 1)
             password.append(self.gen_password(letters[start:end]))
             start = start + length
             i = i + 1
 
+        # return a string if there is only one password
         if i is 1:
             password = str(password[0])
 

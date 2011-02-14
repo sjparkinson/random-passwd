@@ -41,7 +41,7 @@ def _fetch_randomorg(service, **kwargs):
     >>> _fetch_randomorg('numbers', num=3, min=10, max=20)
     ['15', '11', '18']
     """
-    url = "http://random.org/%s/?%s"
+    url = "https://www.random.org/%s/?%s"
     options = dict(format='plain', num=1, col=1, min=0, base=10) # default options
     options.update(kwargs)
     url = url % (service, urllib.urlencode(options))
