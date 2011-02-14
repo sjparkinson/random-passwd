@@ -15,7 +15,7 @@
 #
 # A password strength of 1 is low while 4 is very high.
 
-__version__ = '1.0'
+__version__ = '1.1'
 __url__ = 'https://github.com/r3morse/random-passwd'
 __author__ = "Sam Parkinson <r3morse at gmail dot com>"
 __license__ = "MIT Licence"
@@ -69,7 +69,7 @@ class RandomPasswd():
             if strength == 4:
                 self.chars = self.chars + self.symbol
         else:
-            raise ValueError("Please enter a security level between 1 and 4.")
+            raise ValueError("Please enter a strength between 1 and 4.")
     
     def get_randnumbers(self, length):
         """Retrives the random string of numbers for our password."""
@@ -80,14 +80,13 @@ class RandomPasswd():
             self.quota = self.r.get_quota()
             
             if self.quota > 0:
-                # print "Bits quota left: " + str(self.quota)
-                data = self.r.randrange(1, len(self.chars), 1, ammount = length)
+                data = self.r.randrange(0, len(self.chars), ammount = length)
             else:
-                raise ValueError("Out of random.org bits :/")
+                raise ValueError("Out of random.org bits...")
                      
             return data
         else:
-             raise TypeError("The length must be an intger.")
+             raise TypeError("`length` must be an intger.")
 
     def list_2_char(self, numbers):
         """Converts the list of numbers into a list of characters using `chars`."""
@@ -107,8 +106,6 @@ class RandomPasswd():
 
         return password
 
-    # The public method for generating a password
-    # default is a length of 4, security strength 4 and ammount of 1.
     def passwd(self, length = 12, strength = 4, ammount = 1):
         """Generates a strong password with a default length of 12.
         
@@ -122,17 +119,23 @@ class RandomPasswd():
                    returns a list of strings.
         """
         if type(ammount) is not type(int()) or ammount < 1:
-            raise TypeError("Ammount needs to be an intger.")
+            raise TypeError("`ammount` needs to be an intger.")
 
         self.set_security(strength)
 
         password = list()
+
+        rand     = self.get_randnumbers(length * ammount)
+        letters  = self.list_2_char(rand)
+
         i = 0
+        start = 0
+        end   = 0
         
         while i < ammount:
-            rand     = self.get_randnumbers(length)
-            letters  = self.list_2_char(rand)
-            password.append(self.gen_password(letters))
+            end = length * (i + 1)
+            password.append(self.gen_password(letters[start:end]))
+            start = start + length
             i = i + 1
 
         if i is 1:

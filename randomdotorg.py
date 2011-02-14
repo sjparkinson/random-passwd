@@ -188,30 +188,3 @@ class RandomDotOrg(random.Random):
             return result[0]
         else:
             return result
-
-if __name__ == '__main__':
-    r = RandomDotOrg()
-    def track_quota(quota=None):
-        if quota is None:
-            quota = r.get_quota()
-            print "Current random.org quota:", quota
-        else:
-            old_quota, quota = quota, r.get_quota()
-            print "Quota spent: ", old_quota - quota
-        return quota
-
-    quota = track_quota()
-    L = ['duck', 'dog', 'cat', 'cow', 'gnu', 'chicken']
-    print "Random element from L:", r.choice(L)
-    quota = track_quota(quota)
-    print "3 distinct random elements from L:", r.sample(L, 3)
-    quota = track_quota(quota)
-    r.shuffle(L)
-    print "shuffle entire L in random order:", L
-    quota = track_quota(quota)
-    print "3 ints between [2, 33) step 3:", r.randrange(2, 33, 3, ammount=3)
-    quota = track_quota(quota)
-    print "int between 10 and 20 (inclusive):", r.randint(10, 20)
-    quota = track_quota(quota)
-    print "3 floats in range [0, 1):", r.random(ammount=3)
-    quota = track_quota(quota)
