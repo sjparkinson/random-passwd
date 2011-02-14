@@ -22,8 +22,6 @@ __license__ = "MIT Licence"
 
 from randomdotorg import RandomDotOrg
 
-r = RandomDotOrg()
-
 class RandomPasswd():
     """This class can be used to generate secure passwords.
 
@@ -51,12 +49,15 @@ class RandomPasswd():
     # contain a list of characters from the above lists.
     chars   = dict()
 
-    # Our quota at random.org
+    # Our quota at random.org.
     quota   = None
+
+    # Start the random.org api class.
+    r = RandomDotOrg()
 
     def set_security(self, strength):
         """Takes the given security strength and generates a mixed list in `chars`."""
-        level = int(round(strength))
+        strength = int(round(strength))
         
         if (strength >= 1 and strength <= 4):
             if strength >= 1:
@@ -76,11 +77,11 @@ class RandomPasswd():
             data = list()
 
             # Use the random.org API to get our random numbers
-            self.quota = r.get_quota()
+            self.quota = self.r.get_quota()
             
             if self.quota > 0:
                 # print "Bits quota left: " + str(self.quota)
-                data = r.randrange(1, len(self.chars), 1, ammount = length)
+                data = self.r.randrange(1, len(self.chars), 1, ammount = length)
             else:
                 raise ValueError("Out of random.org bits :/")
                      
