@@ -11,30 +11,30 @@
 #
 # >>> from randompasswd import RandomPasswd
 # >>> p = RandomPasswd()
-# >>> print p.passwd([length], [strength], [ammount])
+# >>> print p.passwd([length], [strength], [amount])
 #
 # A password strength of 1 is low while 4 is very high.
 
 __version__ = '1.1'
-__url__ = 'https://github.com/r3morse/random-passwd'
-__author__ = "Sam Parkinson <r3morse at gmail dot com>"
+__url__     = 'https://github.com/r3morse/random-passwd'
+__author__  = "Sam Parkinson <r3morse at gmail dot com>"
 __license__ = "MIT Licence"
 
-from randomdotorg import RandomDotOrg
+dev = True
+
+if not dev:
+    from randomdotorg import RandomDotOrg
 import random
 
 class RandomPasswd():
     """This class can be used to generate secure passwords.
 
-    To use do something like the following:
+    To use, do something like the following:
     
     >>> from randompasswd import RandomPasswd
     >>> p = RandomPasswd()
     >>> print p.passwd()
     """
-
-    # set to True to save using random.org bits.
-    dev = False
 
     # a list of characters that will be used to generate a password.
     lower       = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
@@ -57,13 +57,16 @@ class RandomPasswd():
     quota   = None
 
     # start the random.org api class.
-    r = RandomDotOrg()
+    if not dev:
+        r = RandomDotOrg()
 
     def set_security(self, strength):
         """Takes the given security strength and generates a mixed list in `chars`."""
         strength = int(round(strength))
         
-        if (strength >= 1 and strength <= 4):
+        if (strength >= 0 and strength <= 4):
+            if strength >= 0:
+                self.chars = self.number
             if strength >= 1:
                 self.chars = self.lower
             if strength >= 2:
@@ -73,7 +76,7 @@ class RandomPasswd():
             if strength == 4:
                 self.chars = self.chars + self.punctuation
         else:
-            raise ValueError("Please enter a strength between 1 and 4.")
+            raise ValueError("Please enter a strength between 0 and 4.")
     
     def get_randnumbers(self, length):
         """Retrives the random string of numbers for our password."""
@@ -81,7 +84,7 @@ class RandomPasswd():
             data = list()
 
             # use random module to save bits when testing
-            if self.dev:
+            if dev:
                 i = 0
                 while i < length:
                     data.append(random.randrange(0, len(self.chars)))
@@ -97,14 +100,14 @@ class RandomPasswd():
                      
             return data
         else:
-             raise TypeError("`length` must be an intger.")
+             raise TypeError("`length` must be an integer.")
 
     def list_2_char(self, numbers):
         """Converts the list of numbers into a list of characters using `chars`."""
         data = list()
 
         # shuffle the list of characters we are using.
-        if self.dev:
+        if dev:
             random.shuffle(self.chars)
         else:
             self.r.shuffle(self.chars)
@@ -115,7 +118,7 @@ class RandomPasswd():
         return data
 
     def gen_password(self, letters):
-        """Generates string(s) of the actual password from the list `letters`."""
+        """Generates a string of the actual password from the list `letters`."""
         password = str()
 
         for i in letters:
@@ -123,24 +126,24 @@ class RandomPasswd():
 
         return password
 
-    def passwd(self, length = 14, strength = 4, ammount = 1):
+    def passwd(self, length = 14, strength = 4, amount = 1):
         """Generates a strong password with a default length of 14.
         
         `length`   the length of the password(s).
         
-        `strength` the strength of the password(s), 1 is low
-                   4 is very hiht.
+        `strength` the strength of the password(s), 0 is low
+                   4 is very high.
         
-        `ammount`  the number of passwords you would like to make,
+        `amount`  the number of passwords you would like to make,
                    when more than one is made, this function
                    returns a list of strings.
         """
-        if type(ammount) is not type(int()) or ammount < 1:
-            raise TypeError("`ammount` needs to be a positive intger.")
+        if type(amount) is not type(int()) or amount < 1:
+            raise TypeError("`amount` needs to be a positive integer.")
 
-        # avoid requesting too large an ammount of random intgers
-        if length * ammount > 10000:
-            if length > ammount:
+        # avoid requesting too large an amount of random intgers
+        if length * amount > 10000:
+            if length > amount:
                 raise ValueError("Please request a smaller password length.")
             else:
                 raise ValueError("Please generate a smaller number of passwords.")
@@ -149,7 +152,7 @@ class RandomPasswd():
 
         password = list()
 
-        rand     = self.get_randnumbers(length * ammount)
+        rand     = self.get_randnumbers(length * amount)
         letters  = self.list_2_char(rand)
 
         # splice up the list of letters into seperate passwords
@@ -157,7 +160,7 @@ class RandomPasswd():
         start   = 0
         end     = 0
 
-        while i < ammount:
+        while i < amount:
             end = length * (i + 1)
             password.append(self.gen_password(letters[start:end]))
             start = start + length
@@ -168,3 +171,14 @@ class RandomPasswd():
             password = str(password[0])
 
         return password
+
+p = RandomPasswd()
+passes =  p.passwd(12, amount = 10, strength=3)
+
+f = open("passwords.txt", "w")
+
+for passwd in passes:
+    f.write(passwd + "\n")
+    print(passwd)
+
+f.close()

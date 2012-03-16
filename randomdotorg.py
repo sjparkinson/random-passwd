@@ -33,7 +33,6 @@ __license__ = "GPL-3"
 
 import random
 import urllib
-import urllib2
 
 
 def _fetch_randomorg(service, **kwargs):
@@ -160,7 +159,7 @@ class RandomDotOrg(random.Random):
         """Chooses k unique random elements from a population sequence."""
         n = len(population)
         if not 0 <= k <= n:
-            raise ValueError, "sample larger than population"
+            raise ValueError("sample larger than population")
         order = _fetch_randomorg('sequences', max=n - 1)
         result = [population[int(order[n])] for n in xrange(k)]
         return result
@@ -177,7 +176,7 @@ class RandomDotOrg(random.Random):
         xr = xrange(start, stop, step)
         n = len(xr)
         if n == 0:
-            raise ValueError('range is empty')
+            raise ValueError("range is empty")
         if ammount is None:
             nints = 1
         else:
