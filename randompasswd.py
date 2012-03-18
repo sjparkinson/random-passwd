@@ -173,7 +173,7 @@ class RandomPasswd():
         return password
 
 p = RandomPasswd()
-passes =  p.passwd(12, amount = 10, strength=3)
+passes =  p.passwd(32, 4, 20)
 
 f = open("passwords.txt", "w")
 
