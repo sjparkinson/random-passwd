@@ -32,7 +32,7 @@ __license__ = "GPL-3"
 
 
 import random
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 
 def _fetch_randomorg(service, **kwargs):
@@ -43,10 +43,10 @@ def _fetch_randomorg(service, **kwargs):
     url = "https://www.random.org/%s/?%s"
     options = dict(format='plain', num=1, col=1, min=0, base=10) # default options
     options.update(kwargs)
-    url = url % (service, urllib.urlencode(options))
+    url = url % (service, urllib.parse.urlencode(options))
     headers = {'User-Agent': 'RandomDotOrg.py/%s + %s' % (__version__, __url__)}
-    req = urllib2.Request(url, headers=headers)
-    return urllib2.urlopen(req).read().splitlines()
+    req = urllib.request.Request(url, headers=headers)
+    return urllib.request.urlopen(req).read().splitlines()
 
 
 class RandomDotOrg(random.Random):
@@ -72,7 +72,7 @@ class RandomDotOrg(random.Random):
         >>> random.seed(randomdotorg.RandomDotOrg().get_seed())
         """
         intlist =  _fetch_randomorg('integers', num=4, max=99999)
-        return long(''.join(number.rjust(5, '0') for number in intlist))
+        return int(''.join(number.rjust(5, '0') for number in intlist))
 
     def write_random_bytes(self, fileobj, num_bytes=256):
         """Writes the specified number of bytes to the file object passed.
@@ -96,7 +96,7 @@ class RandomDotOrg(random.Random):
         else:
             nints = ammount * 5
         pool = _fetch_randomorg('integers', num=nints, max=999)
-        grouped = (pool[i:i+5] for i in xrange(0, nints, 5))
+        grouped = (pool[i:i+5] for i in range(0, nints, 5))
         result = [float('0.%s' % ''.join(number.rjust(3, '0') for number in intlist))
                   for intlist in grouped]
         if ammount is None:
@@ -110,7 +110,7 @@ class RandomDotOrg(random.Random):
         if k <= 0:
             raise ValueError('number of bits must be greater than zero')
         bits = _fetch_randomorg('integers', num=k, max=1, base=2)
-        return long(''.join(bits), 2)
+        return int(''.join(bits), 2)
 
     #--- Stub & Not implemented methods
     def _stub(self, *args, **kwds):
@@ -161,7 +161,7 @@ class RandomDotOrg(random.Random):
         if not 0 <= k <= n:
             raise ValueError("sample larger than population")
         order = _fetch_randomorg('sequences', max=n - 1)
-        result = [population[int(order[n])] for n in xrange(k)]
+        result = [population[int(order[n])] for n in range(k)]
         return result
 
     def randrange(self, start, stop=None, step=1, ammount=None):
@@ -173,7 +173,7 @@ class RandomDotOrg(random.Random):
         """
         if stop is None:
             start, stop = 0, start
-        xr = xrange(start, stop, step)
+        xr = range(start, stop, step)
         n = len(xr)
         if n == 0:
             raise ValueError("range is empty")
