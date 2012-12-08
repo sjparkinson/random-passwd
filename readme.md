@@ -7,9 +7,9 @@ to generate really secure passwords.
 Example Use
 ===========
 
->>> from randompasswd import RandomPasswd
->>> p = RandomPasswd()
->>> print p.passwd()
+    from randompasswd import RandomPasswd
+    p = RandomPasswd()
+    print p.passwd()
 
 Licence
 =======
