@@ -18,8 +18,8 @@
 # A password strength of 1 is low while 4 is very high.
 
 __version__ = '1.1'
-__url__     = 'https://github.com/r3morse/random-passwd'
-__author__  = "Sam Parkinson <r3morse at gmail dot com>"
+__url__ = 'https://github.com/r3morse/random-passwd'
+__author__ = "Sam Parkinson <r3morse at gmail dot com>"
 __license__ = "MIT Licence"
 
 from randomdotorg import RandomDotOrg
@@ -27,6 +27,7 @@ from randomdotorg import RandomDotOrg
 import sys
 import getopt
 import random
+
 
 class RandomPasswd:
     """This class can be used to generate secure passwords.
@@ -39,20 +40,20 @@ class RandomPasswd:
     """
 
     # A list of characters that will be used to generate a password.
-    lower       = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-                    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ]
+    lower = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
-    upper       = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' ]
+    upper = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 
-    number      = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ]
+    number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-    punctuation = [ '`', '!', '"', '$', '%', '^', '&', '*', '(', ')', '\'',
+    punctuation = ['`', '!', '"', '$', '%', '^', '&', '*', '(', ')', '\'',
                     '-', '_', '=', '+', '[', '{', ']', '}', ';', ':', '?',
-                    '@', '#', '~', '\\', '|', ',', '<', '.', '>', '/' ]
+                    '@', '#', '~', '\\', '|', ',', '<', '.', '>', '/']
 
-    # Creating the characters variable that will, according to the security level
-    # contain a list of characters from the above lists.
+    # Creating the characters variable that will, according to the security
+    # level contain a list of characters from the above lists.
     characters = list()
 
     # Our quota at random.org.
@@ -94,7 +95,7 @@ class RandomPasswd:
         if self.quota > 0:
             numbers = list()
 
-            numbers = self.r.randrange(0, len(self.characters), ammount = length)
+            numbers = self.r.randrange(0, len(self.characters), ammount=length)
         else:
             raise ValueError("Out of random.org bits...")
 
@@ -108,7 +109,7 @@ class RandomPasswd:
 
         return characters
 
-    def passwd(self, length = 14, strength = 4, amount = 1):
+    def passwd(self, length=14, strength=4, amount=1):
         """Generates a strong password with a default length of 14.
 
         `length`   the length of the password(s).
@@ -120,7 +121,7 @@ class RandomPasswd:
                    when more than one is made, this function
                    returns a list of strings.
         """
-        
+
         if type(amount) is not int or amount < 1:
             raise ValueError("`amount` needs to be a positive integer.")
 
@@ -178,7 +179,7 @@ if __name__ == "__main__":
     result = p.passwd(length, strength, number)
 
     for password in result:
-         print(password)
+        print(password)
 
 def usage():
         print("Unknown arguments.")
