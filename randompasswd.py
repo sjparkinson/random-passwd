@@ -19,7 +19,7 @@
 
 __version__ = '1.1'
 __url__ = 'https://github.com/r3morse/random-passwd'
-__author__ = "Sam Parkinson <r3morse at gmail dot com>"
+__author__ = "Sam Parkinson <sam . james . parkinson at gmail dot com>"
 __license__ = "MIT Licence"
 
 from randomdotorg import RandomDotOrg
