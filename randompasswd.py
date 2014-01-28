@@ -60,7 +60,7 @@ class RandomPasswd:
     quota = None
 
     # Start the random.org api class.
-    r = RandomDotOrg()
+    rand = RandomDotOrg()
 
     def set_security(self, strength):
         """Takes the given security strength and generates a mixed list for `characters`."""
@@ -69,45 +69,38 @@ class RandomPasswd:
             raise ValueError("Please enter a strength between 0 and 4.")
 
         if strength >= 0:
-            self.characters = self.number
+            self.characters = self.lower
 
         if strength >= 1:
-            self.characters += self.lower
-
-        if strength >= 2:
             self.characters += self.upper
 
-        if strength >= 3:
+        if strength >= 2:
             self.characters += self.number
 
-        if strength == 4:
+        if strength >= 3:
             self.characters += self.punctuation
 
     def get_random_characters(self, length):
         """Retrives the random string of numbers for our password."""
 
-        if type(length) is not int:
-            raise TypeError("`length` must be an integer.")
-
         # Use the random.org API to get our random numbers.
-        self.quota = self.r.get_quota()
+        self.quota = self.rand.get_quota()
 
         if self.quota > 0:
-            numbers = list()
+            numbers = self.rand.randrange(0, len(self.characters), ammount=int(length))
 
-            numbers = self.r.randrange(0, len(self.characters), ammount=length)
         else:
             raise ValueError("Out of random.org bits...")
 
-        characters = list()
+        random_characters = list()
 
         # Shuffle the list of characters we are using.
-        self.r.shuffle(self.characters)
+        self.rand.shuffle(self.characters)
 
         for i in numbers:
-            characters.append(self.characters[i])
+            random_characters.append(self.characters[i])
 
-        return characters
+        return random_characters
 
     def passwd(self, length=14, strength=4, amount=1):
         """Generates a strong password with a default length of 14.
@@ -122,13 +115,14 @@ class RandomPasswd:
                    returns a list of strings.
         """
 
-        if type(amount) is not int or amount < 1:
+        if amount < 1:
             raise ValueError("`amount` needs to be a positive integer.")
 
         total_chars = length * amount
 
         # Avoid requesting too large an amount of random intgers.
         if total_chars > 10000:
+
             if length > amount:
                 raise ValueError("Please request a smaller password length.")
             else:
@@ -143,6 +137,7 @@ class RandomPasswd:
 
         # Splice up the list of random_characters into seperate passwords.
         while count < total_chars:
+
             password.append(''.join(random_characters[count:count + length]))
 
             count += length
@@ -154,33 +149,30 @@ class RandomPasswd:
 #
 
 if __name__ == "__main__":
-    p = RandomPasswd()
 
-    length = 128
-    strength = 4
+    length = 64
+    strength = 3
     number = 1
 
     try:
-            opts, args = getopt.getopt(sys.argv[1:], "l:s:n:", ["length=", "strength=", "number="])
+        opts, args = getopt.getopt(sys.argv[1:], "l:s:n:", ["length=", "strength=", "number="])
     except:
-            usage()
-            sys.exit(2)
+        usage()
+        sys.exit(2)
 
     for opt, arg in opts:
-            if opt == "-l":
-                    length = int(arg)
+        if opt == "-l":
+            length = int(arg)
 
-            elif opt == "-s":
-                    strength = int(arg)
+        elif opt == "-s":
+            strength = int(arg)
 
-            elif opt == "-n":
-                    number = int(arg)
+        elif opt == "-n":
+            number = int(arg)
 
-    result = p.passwd(length, strength, number)
-
-    for password in result:
+    for password in RandomPasswd().passwd(length, strength, number):
         print(password)
 
 
 def usage():
-        print("Unknown arguments.")
+    print("Unknown arguments.")
